@@ -61,7 +61,7 @@ export const ShortenedUrlDisplay = memo(function ShortenedUrlDisplay({
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
-            ✅ URL Shortened Successfully!
+            URL Shortened Successfully!
           </h3>
           <div className="space-y-2">
             <div>

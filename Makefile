@@ -23,6 +23,15 @@ shell: ## Enter PHP container bash
 	docker compose exec php bash
 
 # Backend commands (run in Docker)
+env-setup: ## Create .env file from .env.example if it doesn't exist
+	@if [ ! -f symfony/.env ]; then \
+		echo "Creating .env file from .env.example..."; \
+		cp symfony/.env.example symfony/.env; \
+		echo ".env file created successfully!"; \
+	else \
+		echo ".env file already exists"; \
+	fi
+
 composer-install: ## Install Composer dependencies (in Docker)
 	docker compose exec php composer install --no-interaction --optimize-autoloader
 
@@ -56,12 +65,12 @@ test-integration: ## Run integration tests only (in Docker)
 cache-clear: ## Clear Symfony cache (in Docker)
 	docker compose exec php php bin/console cache:clear
 
-backend-setup: up composer-install db-create ## Setup backend (Docker + install + database)
+backend-setup: env-setup up composer-install db-create ## Setup backend (Docker + install + database)
 	@echo "Backend setup complete!"
 
 # Frontend commands
 frontend-install: ## Install frontend dependencies
-	cd frontend && npm install
+	cd frontend && npm install --legacy-peer-deps
 
 frontend-dev: ## Start frontend development server (foreground)
 	cd frontend && npm run dev

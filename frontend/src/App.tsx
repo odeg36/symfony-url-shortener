@@ -38,7 +38,7 @@ function AppContent() {
           </p>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
             <p className="text-sm text-blue-800">
-              <span className="font-semibold">💡 How it works:</span> Enter a long URL, get a short link.
+              <span className="font-semibold">How it works:</span> Enter a long URL, get a short link.
               When someone clicks your short link, they're automatically redirected to the original URL
               and the click is tracked!
             </p>
@@ -57,9 +57,6 @@ function AppContent() {
 
         <footer className="text-center mt-12 text-gray-600 text-sm">
           <p>Built with React, TypeScript, Tailwind CSS, and Symfony</p>
-          <p className="text-xs mt-1 text-gray-500">
-            Featuring: Error boundaries, retry logic, accessibility, and performance optimizations
-          </p>
         </footer>
       </div>
 
