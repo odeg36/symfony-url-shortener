@@ -6,7 +6,7 @@ import { useNotification } from '../contexts/NotificationContext';
 import { useUrl } from '../contexts/UrlContext';
 import { useRetry } from '../hooks/useRetry';
 import { useClipboard } from '../hooks/useClipboard';
-import { SUCCESS_MESSAGES, LOADING_MESSAGES } from '../constants';
+import { SUCCESS_MESSAGES, LOADING_MESSAGES, API_CONFIG } from '../constants';
 
 /**
  * URL list with:
@@ -33,7 +33,7 @@ export const UrlList = memo(function UrlList() {
     setError(null);
     
     try {
-      const response = await executeWithRetry(() => api.getAllUrls(page, 10));
+      const response = await executeWithRetry(() => api.getAllUrls(page, API_CONFIG.DEFAULT_PAGE_SIZE));
       setData(response);
     } catch (err) {
       const errorMessage = err instanceof AppError 

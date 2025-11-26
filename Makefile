@@ -80,6 +80,13 @@ frontend-start: ## Start frontend development server (background)
 	@cd frontend && npm run dev > /dev/null 2>&1 &
 	@echo "Frontend started at http://localhost:5176"
 
+frontend-restart: ## Restart frontend development server
+	@echo "Restarting frontend development server..."
+	@pkill -f "vite" || true
+	@sleep 1
+	@cd frontend && npm run dev > /dev/null 2>&1 &
+	@echo "Frontend restarted at http://localhost:5176"
+
 frontend-build: ## Build frontend for production
 	cd frontend && npm run build
 
