@@ -1,0 +1,17 @@
+# Swagger/OpenAPI documentation UI (HTML with Redocly)
+app.swagger_ui:
+    path: /api/doc
+    controller: nelmio_api_doc.controller.redocly
+    methods: [GET]
+
+# Alternative: Stoplight UI  
+app.stoplight:
+    path: /api/docs/stoplight
+    controller: nelmio_api_doc.controller.stoplight
+    methods: [GET]
+
+# Expose your documentation as JSON swagger compliant
+app.swagger_json:
+    path: /api/doc.json
+    controller: nelmio_api_doc.controller.swagger
+    methods: [GET]

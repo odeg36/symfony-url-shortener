@@ -1,0 +1,9 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: "My API"
+            description: "Auto-generated API docs"
+            version: "v1"
+    areas: # which routes to include
+        default:
+            path_patterns: ['/api'] # only include routes under /api

@@ -1,0 +1,86 @@
+{
+    "type": "project",
+    "license": "proprietary",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.4",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "doctrine/doctrine-bundle": "^2.10",
+        "doctrine/doctrine-migrations-bundle": "^3.5",
+        "doctrine/orm": "^3.5",
+        "nelmio/api-doc-bundle": "^5.0",
+        "nelmio/cors-bundle": "^2.6",
+        "symfony/asset": "^7.3",
+        "symfony/dotenv": "^7.3",
+        "symfony/framework-bundle": "^7.3",
+        "symfony/http-client": "^7.3",
+        "symfony/http-foundation": "^7.3",
+        "symfony/http-kernel": "^7.3",
+        "symfony/routing": "^7.3",
+        "symfony/runtime": "*",
+        "symfony/serializer": "^7.3",
+        "symfony/translation": "^7.3",
+        "symfony/validator": "^7.3",
+        "twig/extra-bundle": "*"
+    },
+    "require-dev": {
+        "symfony/maker-bundle": "^1.50",
+        "symfony/test-pack": "^1.0",
+        "symfony/browser-kit": "^7.3",
+        "symfony/css-selector": "^7.3",
+        "symfony/web-profiler-bundle": "^7.3",
+        "phpunit/phpunit": "^12.2",
+        "fakerphp/faker": "^1.21",
+        "zenstruck/foundry": "^2.6",
+        "friendsofphp/php-cs-fixer": "*",
+        "phpstan/phpstan": "^2.1",
+        "vimeo/psalm": "^6.13",
+        "phpmd/phpmd": "^2.15"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "symfony/runtime": true
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix --allow-risky=yes",
+        "psalm-check": "psalm --show-info=true",
+        "psalm-alter": "psalm --alter --issues=all --dry-run",
+        "stan": "phpstan analyse --level=max src",
+        "md": "@php -d error_reporting='E_ALL & ~E_DEPRECATED' vendor/bin/phpmd src text ruleset.xml",
+        "code-fix" : [
+            "@cs-fix", 
+            "@psalm-alter"
+        ],
+        "code-check" : [
+            "@psalm-check",
+            "@stan",
+            "@md"
+        ],
+        "test": "phpunit",
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ],
+        "auto-scripts": {
+            "cache:clear": "php bin/console cache:clear",
+            "assets:install public": "php bin/console assets:install public"
+        }
+    }
+}

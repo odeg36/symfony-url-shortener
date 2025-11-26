@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+ARCHITECTURE.md
+IMPLEMENTATION_SUMMARY.md
+PRESENTATION.md
+QUICKSTART.md
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Node modules (frontend)
+frontend/node_modules
+frontend/dist
+frontend/.vite
+
+# Symfony cache and logs
+symfony/var/cache/*
+symfony/var/log/*
+symfony/vendor
+
+# Tests
+symfony/tests
+**/phpunit*.xml
+**/.phpunit.cache
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# MacOS
+.DS_Store
+
+# Environment files (use .env.example instead)
+**/.env.local
+**/.env.*.local

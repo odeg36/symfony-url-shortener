@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<psalm
+    xmlns="https://getpsalm.org/schema/config"
+    errorLevel="4"
+    resolveFromConfigFile="true"
+    findUnusedCode="true"
+    findUnusedVariables="true"
+>
+    <fileExtensions>
+        <extension name="" />
+    </fileExtensions>
+
+    <projectFiles>
+        <directory name="bin" />
+        <directory name="src" />
+        <ignoreFiles>
+            <file name="bin/phpunit" />
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>

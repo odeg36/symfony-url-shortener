@@ -1,0 +1,188 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Service;
+
+use App\Entity\ShortUrl;
+use App\Exception\InvalidUrlException;
+use App\Exception\ShortUrlNotFoundException;
+use App\Exception\ShortUrlPersistenceException;
+use App\Exception\UnreachableUrlException;
+use App\Repository\ShortUrlRepository;
+use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+final class UrlShortenerService
+{
+    public function __construct(
+        private readonly ShortUrlRepository $repository,
+        private readonly ValidatorInterface $validator,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly HttpClientInterface $httpClient,
+        private readonly string $baseUrl,
+    ) {
+    }
+
+    /**
+     * Get paginated list of all shortened URLs.
+     *
+     * @return array{data: array<int, array<string, mixed>>, pagination: array{total: int, page: int, limit: int, totalPages: int}}
+     */
+    public function getAllUrlsPaginated(int $page = 1, int $limit = 10): array
+    {
+        $page = max(1, $page);
+        $limit = max(1, min(100, $limit));
+
+        $total = $this->repository->count([]);
+        $offset = ($page - 1) * $limit;
+
+        $urls = $this->repository->findBy([], ['createdAt' => 'DESC'], $limit, $offset);
+        $data = array_map(fn (ShortUrl $url) => $this->formatShortUrl($url), $urls);
+
+        return [
+            'data' => $data,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'totalPages' => (int) ceil($total / $limit),
+            ],
+        ];
+    }
+
+    public function shortenUrl(?string $originalUrl): ShortUrl
+    {
+        if (null === $originalUrl || '' === trim($originalUrl)) {
+            throw new InvalidUrlException('Please provide a URL to shorten');
+        }
+
+        // Validate URL using Symfony Validator with strict requirements
+        // Note: requireTld is set to false to support all TLDs including newer ones like .ci, .io, etc.
+        $violations = $this->validator->validate($originalUrl, [
+            new Assert\Url(
+                protocols: ['http', 'https'],
+                requireTld: false,
+                message: 'The URL "{{ value }}" is not valid. Only HTTP and HTTPS URLs are allowed.'
+            ),
+        ]);
+
+        // Additional validation: ensure URL has a domain with at least one dot
+        $parsedUrl = parse_url($originalUrl);
+        if (!isset($parsedUrl['host']) || !str_contains($parsedUrl['host'], '.')) {
+            throw new InvalidUrlException($originalUrl);
+        }
+
+        if (count($violations) > 0) {
+            throw new InvalidUrlException($originalUrl);
+        }
+        $this->validateUrlIsReachable($originalUrl);
+
+        $existing = $this->repository->findByOriginalUrl($originalUrl);
+        if (null !== $existing) {
+            return $existing;
+        }
+
+        $shortCode = $this->generateShortCode($originalUrl);
+        $shortUrl = new ShortUrl($originalUrl, $shortCode);
+
+        try {
+            $this->entityManager->persist($shortUrl);
+            $this->entityManager->flush();
+        } catch (DBALException $e) {
+            throw new ShortUrlPersistenceException();
+        }
+
+        return $shortUrl;
+    }
+
+    public function resolveShortCode(string $shortCode): ShortUrl
+    {
+        $shortUrl = $this->repository->findByShortCode($shortCode);
+
+        if (null === $shortUrl) {
+            throw new ShortUrlNotFoundException($shortCode);
+        }
+
+        return $shortUrl;
+    }
+
+    public function incrementClicks(ShortUrl $shortUrl): void
+    {
+        $shortUrl->incrementClicks();
+        try {
+            $this->entityManager->flush();
+        } catch (DBALException $e) {
+            throw new ShortUrlPersistenceException();
+        }
+    }
+
+    /**
+     * Validates that the URL is reachable by making a HEAD request.
+     *
+     * @throws UnreachableUrlException if the URL cannot be reached
+     */
+    private function validateUrlIsReachable(string $url): void
+    {
+        try {
+            $response = $this->httpClient->request('HEAD', $url, [
+                'timeout' => 5,
+                'max_redirects' => 3,
+                'headers' => [
+                    'User-Agent' => 'URL-Shortener-Bot/1.0',
+                ],
+            ]);
+
+            $statusCode = $response->getStatusCode();
+
+            // Accept 2xx and 3xx status codes as valid
+            if ($statusCode >= 400) {
+                throw new UnreachableUrlException($url);
+            }
+        } catch (\Exception $e) {
+            // If it's already our exception, re-throw it
+            if ($e instanceof UnreachableUrlException) {
+                throw $e;
+            }
+            // Otherwise, wrap any network/HTTP errors
+            throw new UnreachableUrlException($url);
+        }
+    }
+
+    /**
+     * Generates a deterministic short code for the URL.
+     *
+     * Uses MD5 hash (first 8 characters) for deterministic code generation.
+     * Same URL always produces the same short code.
+     *
+     * Collision probability: With 8 hex chars, we have 16^8 = 4.3 billion possible codes.
+     * Birthday paradox: ~50% collision chance at ~77,000 unique URLs.
+     * For production with millions of URLs, consider:
+     * - Longer codes (10-12 chars)
+     * - Database unique constraint handles collisions
+     * - Could add incremental suffix on collision
+     */
+    private function generateShortCode(string $url): string
+    {
+        return substr(md5($url), 0, 8);
+    }
+
+    /**
+     * Format a ShortUrl entity to an array representation.
+     *
+     * @return array{originalUrl: string, shortCode: string, shortUrl: string, clicks: int, createdAt: string}
+     */
+    public function formatShortUrl(ShortUrl $shortUrl): array
+    {
+        return [
+            'originalUrl' => $shortUrl->getOriginalUrl(),
+            'shortCode' => $shortUrl->getShortCode(),
+            'shortUrl' => $this->baseUrl.'/'.$shortUrl->getShortCode(),
+            'clicks' => $shortUrl->getClicks(),
+            'createdAt' => $shortUrl->getCreatedAt()->format('c'),
+        ];
+    }
+}

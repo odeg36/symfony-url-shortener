@@ -1,0 +1,2 @@
+# Ignore Doctrine ORM proxy autoloader deprecation (we're using native lazy objects)
+%Doctrine\\ORM\\Proxy\\Autoloader%
