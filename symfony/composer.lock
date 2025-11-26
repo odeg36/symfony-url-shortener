@@ -10090,16 +10090,16 @@
         },
         {
             "name": "spatie/array-to-xml",
-            "version": "3.4.1",
+            "version": "3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/array-to-xml.git",
-                "reference": "6a740f39415aee8886aea10333403adc77d50791"
+                "reference": "66ea5657f6a7efbf498f21b6536a2fbc5a228a75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/array-to-xml/zipball/6a740f39415aee8886aea10333403adc77d50791",
-                "reference": "6a740f39415aee8886aea10333403adc77d50791",
+                "url": "https://api.github.com/repos/spatie/array-to-xml/zipball/66ea5657f6a7efbf498f21b6536a2fbc5a228a75",
+                "reference": "66ea5657f6a7efbf498f21b6536a2fbc5a228a75",
                 "shasum": ""
             },
             "require": {
@@ -10142,7 +10142,7 @@
                 "xml"
             ],
             "support": {
-                "source": "https://github.com/spatie/array-to-xml/tree/3.4.1"
+                "source": "https://github.com/spatie/array-to-xml/tree/3.4.2"
             },
             "funding": [
                 {
@@ -10154,7 +10154,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-11-12T10:32:50+00:00"
+            "time": "2025-11-26T17:06:37+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
@@ -11332,5 +11332,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
