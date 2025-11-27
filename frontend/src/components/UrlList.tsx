@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
+import { Copy, Check } from 'lucide-react';
 import { api } from '../api';
 import type { PaginatedResponse, ShortUrl } from '../types';
 import { AppError, NotificationType } from '../types';
@@ -245,7 +246,11 @@ const UrlRow = memo(function UrlRow({
             title={isCopied ? 'Copied!' : 'Copy to clipboard'}
             aria-label={isCopied ? 'URL copied' : 'Copy URL to clipboard'}
           >
-            {isCopied ? '✓' : '📋'}
+            {isCopied ? (
+              <Check className="w-4 h-4 text-green-600" aria-hidden="true" />
+            ) : (
+              <Copy className="w-4 h-4" aria-hidden="true" />
+            )}
           </button>
         </div>
       </td>

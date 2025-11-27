@@ -1,3 +1,4 @@
+import { Lightbulb } from 'lucide-react';
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 
 interface Props {
@@ -23,6 +24,9 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
+      //hasError: true,
+      //error: {message: 'Error', name: ''},
+      //errorInfo: {componentStack: ''},
     };
   }
 
@@ -68,7 +72,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full">
             <div className="flex items-center gap-3 mb-6">
-              <div className="text-4xl">⚠️</div>
+            <Lightbulb className="w-8 h-8" aria-hidden="true" />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   Something went wrong

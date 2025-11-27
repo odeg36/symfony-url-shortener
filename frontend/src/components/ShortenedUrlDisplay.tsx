@@ -1,4 +1,5 @@
 import { memo, useState, useCallback } from 'react';
+import { Copy, Check, ExternalLink, Info } from 'lucide-react';
 import type { ShortUrl } from '../types';
 import { NotificationType } from '../types';
 import { useClipboard } from '../hooks/useClipboard';
@@ -32,7 +33,7 @@ export const ShortenedUrlDisplay = memo(function ShortenedUrlDisplay({
     }
   };
 
-  const handleTestRedirect = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleTestRedirect = useCallback(async () => {
     // Don't prevent default - let the link open in a new tab
     // But fetch updated stats after a short delay to allow the redirect to register
     setIsUpdating(true);
@@ -86,11 +87,21 @@ export const ShortenedUrlDisplay = memo(function ShortenedUrlDisplay({
                 
                 <button
                   onClick={handleCopy}
-                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-sm transition-colors whitespace-nowrap focus-visible-ring"
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-sm transition-colors whitespace-nowrap focus-visible-ring inline-flex items-center gap-1.5"
                   aria-label={isCopied ? 'URL copied to clipboard' : 'Copy URL to clipboard'}
                   aria-live="polite"
                 >
-                  {isCopied ? '✓ Copied!' : '📋 Copy'}
+                  {isCopied ? (
+                    <>
+                      <Check className="w-4 h-4" aria-hidden="true" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" aria-hidden="true" />
+                      <span>Copy</span>
+                    </>
+                  )}
                 </button>
                 
                 <a
@@ -98,14 +109,17 @@ export const ShortenedUrlDisplay = memo(function ShortenedUrlDisplay({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={handleTestRedirect}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors whitespace-nowrap focus-visible-ring disabled:opacity-50"
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors whitespace-nowrap focus-visible-ring disabled:opacity-50 inline-flex items-center gap-1.5"
                   aria-label="Test redirect in new window"
                 >
-                  🔗 Test Redirect {isUpdating && '⟳'}
+                  <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                  <span>Test Redirect</span>
+                  {isUpdating && <span className="animate-spin">⟳</span>}
                 </a>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                ℹ️ Click the link above to be redirected to {shortUrl.originalUrl}
+              <p className="text-xs text-gray-500 mt-1 flex items-start gap-1">
+                <Info className="w-3 h-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                <span>Click the link above to be redirected to {shortUrl.originalUrl}</span>
               </p>
             </div>
             

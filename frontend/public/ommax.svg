@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#1E40AF" stroke="#1E3A8A" stroke-width="3"/>
+  
+  <!-- OMMAX text with modern styling -->
+  <text x="100" y="110" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">
+    OMMAX
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="100" y="135" font-family="Arial, sans-serif" font-size="14" fill="#93C5FD" text-anchor="middle">
+    GMBH
+  </text>
+  
+  <!-- Decorative link icon at top -->
+  <g transform="translate(100, 45)">
+    <path d="M-12,-8 L-8,-8 L-8,-12 L-4,-12 L-4,-8 L0,-8 L0,8 L-4,8 L-4,12 L-8,12 L-8,8 L-12,8 Z" fill="#60A5FA"/>
+    <path d="M4,-8 L8,-8 L8,-12 L12,-12 L12,-8 L16,-8 L16,8 L12,8 L12,12 L8,12 L8,8 L4,8 Z" fill="#60A5FA"/>
+    <rect x="-4" y="-2" width="12" height="4" fill="#60A5FA"/>
+  </g>
+</svg>

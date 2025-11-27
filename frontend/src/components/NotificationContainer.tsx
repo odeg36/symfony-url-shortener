@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { CheckCircle2, XCircle, AlertTriangle, Info, Bell } from 'lucide-react';
 import { useNotification } from '../contexts/NotificationContext';
 import { NotificationType } from '../types';
 
@@ -30,9 +31,9 @@ export const NotificationContainer = memo(function NotificationContainer() {
           role="alert"
         >
           <div className="flex items-start gap-3">
-            <span className="text-2xl flex-shrink-0">
+            <div className="flex-shrink-0 mt-0.5">
               {getNotificationIcon(notification.type)}
-            </span>
+            </div>
             <div className="flex-1 pt-0.5">
               <p className="text-sm font-medium">{notification.message}</p>
             </div>
@@ -77,17 +78,19 @@ function getNotificationStyles(type: NotificationType): string {
   }
 }
 
-function getNotificationIcon(type: NotificationType): string {
+function getNotificationIcon(type: NotificationType): React.ReactElement {
+  const iconProps = { className: 'w-5 h-5', 'aria-hidden': true };
+  
   switch (type) {
     case NotificationType.SUCCESS:
-      return '✅';
+      return <CheckCircle2 {...iconProps} />;
     case NotificationType.ERROR:
-      return '❌';
+      return <XCircle {...iconProps} />;
     case NotificationType.WARNING:
-      return '⚠️';
+      return <AlertTriangle {...iconProps} />;
     case NotificationType.INFO:
-      return 'ℹ️';
+      return <Info {...iconProps} />;
     default:
-      return '📢';
+      return <Bell {...iconProps} />;
   }
 }

@@ -1,3 +1,4 @@
+import { Link2 } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { UrlProvider } from './contexts/UrlContext';
@@ -24,14 +25,15 @@ function AppContent() {
           role="alert"
           aria-live="assertive"
         >
-          ⚠️ You are currently offline. Some features may not work.
+        You are currently offline. Some features may not work.
         </div>
       )}
 
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            🔗 URL Shortener
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
+            <Link2 className="w-8 h-8" aria-hidden="true" />
+            <span>URL Shortener</span>
           </h1>
           <p className="text-gray-600 mb-4">
             Create short, memorable links in seconds
@@ -45,14 +47,22 @@ function AppContent() {
           </div>
         </header>
 
-        <main className="max-w-4xl mx-auto">
-          <UrlShortenerForm />
+        <main className="max-w-8xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left side - Form and Success Message */}
+            <div className="space-y-6">
+              <UrlShortenerForm />
 
-          {lastShortenedUrl && (
-            <ShortenedUrlDisplay shortUrl={lastShortenedUrl} />
-          )}
+              {lastShortenedUrl && (
+                <ShortenedUrlDisplay shortUrl={lastShortenedUrl} />
+              )}
+            </div>
 
-          <UrlList />
+            {/* Right side - URL List (takes 2 columns) */}
+            <div className="lg:col-span-2">
+              <UrlList />
+            </div>
+          </div>
         </main>
 
         <footer className="text-center mt-12 text-gray-600 text-sm">
