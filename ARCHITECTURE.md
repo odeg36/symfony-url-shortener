@@ -495,5 +495,3 @@ Dependency Direction: ↓ (Top depends on Bottom, never reversed)
 │  Dependency injection via constructor                       │
 └─────────────────────────────────────────────────────────────┘
 ```
-
-This completes the architecture documentation!

@@ -370,97 +370,42 @@ CREATE UNIQUE INDEX idx_original_url ON short_urls(original_url);
 
 ---
 
-## Future Enhancements
+## Ideas for Extension
 
-1. **Rate Limiting**: Prevent abuse
-2. **Analytics**: Detailed click tracking (geo, referrer, device)
-3. **Custom Short Codes**: Let users choose their code
-4. **Expiration**: URLs expire after time period
-5. **User Accounts**: Associate URLs with users
-6. **QR Codes**: Generate QR codes for short URLs
-7. **Link Preview**: Show preview before redirecting
-8. **API Authentication**: JWT tokens for API access
+- Analytics dashboard with charts
+- Custom short codes
+- QR code generation
+- User accounts and private URLs
+- Link expiration
+- Preview page before redirect
 
 ---
 
 ## Questions to Expect
 
-### Technical Questions
-1. **Why Symfony?**
-   - Mature framework, excellent documentation
-   - Strong ORM (Doctrine)
-   - Built-in validation, security features
-   - Good for REST APIs
+### Technical Notes
 
-2. **Why MD5 for short codes?**
-   - Deterministic (same URL = same code)
-   - Fast computation
-   - Collision unlikely for short URLs
-   - Could use base62 encoding for custom codes
+**Why Symfony?** - Solid framework with good ORM, validation, and API tooling
 
-3. **How to handle collisions?**
-   - MD5 collisions extremely rare
-   - Unique constraint in database
-   - Could append incrementing number if needed
+**Short code generation** - Using MD5 hash (first 8 chars) makes it deterministic. Same URL always gets the same code, which is useful for deduplication.
 
-4. **How to scale this?**
-   - Horizontal scaling: Multiple app instances
-   - Database read replicas
-   - Redis caching for frequent lookups
-   - CDN for frontend
-   - Load balancer for API
+**Scaling** - Can add more API instances behind a load balancer, use read replicas for the database, add Redis caching. Pretty standard stuff.
 
-### Process Questions
-1. **How long did this take?**
-   - Backend: ~4 hours
-   - Frontend: ~2 hours
-   - Testing & Documentation: ~2 hours
+### Discussion Points
 
-2. **What was most challenging?**
-   - Comprehensive test coverage
-   - API design decisions
+**Potential Improvements:**
+- Analytics dashboard (track clicks over time, geographic data)
+- Redis caching for frequently accessed URLs
+- Custom short codes (let users pick their own)
+- Rate limiting to prevent abuse
+- Bulk URL shortening via CSV upload
 
-3. **What would you improve?**
-   - Add more analytics
-   - Implement caching
-   - On collision append incrementing number
-   - Add rate limiting
-   - Better error messages
-   - Translation messages
-   - Admin & Security Layer
-   - Module to bulk URLs (Form or File uploadl) and short them.
+**Technical Decisions:**
+- MD5 for short codes: deterministic, fast, good enough for this scale
+- PostgreSQL: ACID compliance, good indexing for lookups
+- Docker setup: makes it easy to run anywhere
+- Separate test database: keeps test data isolated
 
 ---
 
-## Key Takeaways
-
-**Requirements Met:**
-- All 4 API endpoints implemented
-- Deterministic short codes
-- Click tracking
-- Full test coverage
-- SPA frontend with CSS framework
-- Clean code principles demonstrated
-
-**Best Practices:**
-- RESTful API design
-- Clean architecture
-- Comprehensive testing
-- Documentation
-- Type safety
-- Error handling
-
-**Ready for Production:**
-- Scalable architecture
-- Database migrations
-- Environment configuration
-- CORS enabled
-- API documentation
-
----
-
-## Thank You!
-
-**Questions?**
-
-**Contact:** [Your Email/GitHub]
+## Questions?

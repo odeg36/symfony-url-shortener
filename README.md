@@ -270,109 +270,32 @@ make fixtures-load   # Load fixtures
 make serve           # Start Symfony Server
 ```
 
-## Production Considerations
+## Production Checklist
 
-### Security
-- **Rate Limiting**: Implement per-IP rate limits (e.g., 100 requests/hour) to prevent abuse
-  - Consider using Symfony Rate Limiter component or API Gateway
-  - Example: `composer require symfony/rate-limiter`
-- **API Authentication**: Add JWT or OAuth2 for protected endpoints
-- **Input Sanitization**: Already implemented with URL validation
-- **DDoS Protection**: Use CloudFlare or AWS Shield
+Some things to consider before deploying this:
 
-### Performance
-- **Caching**: Cache frequent lookups with Redis
-  ```yaml
-  # config/packages/cache.yaml
-  framework:
-      cache:
-          app: cache.adapter.redis
-          default_redis_provider: redis://localhost
-  ```
-- **Database Optimization**:
-  - Add composite indexes for common queries
-  - Use read replicas for scaling
-  - Consider PostgreSQL connection pooling (PgBouncer)
-- **CDN**: Serve frontend static files through CDN (CloudFront, CloudFlare)
+- **Rate limiting** - prevent abuse (Symfony has a rate limiter component)
+- **Caching** - Redis for frequently accessed URLs
+- **Monitoring** - track response times and error rates
+- **Database** - read replicas if traffic gets high
+- **Backups** - automated daily backups with retention policy
+- **CDN** - serve frontend through CloudFlare or similar
 
-### Scalability
-- **Horizontal Scaling**: Deploy multiple API instances behind load balancer
-- **Database**: Master-slave replication for read-heavy workloads
-- **Short Code Collision**: Current MD5 approach is deterministic; consider adding retry logic for rare collisions
+## Architecture Notes
 
-### Monitoring & Observability
-- **Logging**: Use Monolog with ELK stack or Datadog
-- **Metrics**: Track API response times, error rates, top URLs
-- **Alerting**: Set up alerts for high error rates or slow responses
-- **Health Checks**: Add `/health` endpoint for load balancer monitoring
+### Why Microservice Architecture?
+This project is built as a focused service handling only URL shortening. Each component (frontend, backend, database) can scale independently, which is useful for production deployments.
 
-### Deployment
-- **Environment Variables**: Use `.env.example` as template
-- **Database Migrations**: Always run before deployment
-- **Zero-Downtime**: Use blue-green or rolling deployments
-- **Backup Strategy**: Automated daily database backups with point-in-time recovery
+### API Design
+Using REST keeps things simple - standard HTTP methods, JSON responses, easy to consume from any client. The OpenAPI docs at `/api/doc` make it easy to test endpoints.
 
-## 📖 Additional Questions Answered
-
-### What is a Microservice?
-A microservice is an architectural style where an application is composed of small, independent services that:
-- Run in their own process
-- Communicate via APIs (typically REST or message queues)
-- Can be deployed independently
-- Focus on a single business capability
-- Use lightweight protocols
-
-**Advantages:**
-- **Scalability**: Scale individual services based on demand
-- **Flexibility**: Use different technologies per service
-- **Resilience**: Failure in one service doesn't crash the entire system
-- **Easy Deployment**: Deploy and update services independently
-- **Team Autonomy**: Different teams can work on different services
-
-### What are the Advantages of REST API?
-- **Stateless**: Each request contains all needed information
-- **Cacheable**: Responses can be cached for better performance
-- **Uniform Interface**: Standard HTTP methods (GET, POST, PUT, DELETE)
-- **Client-Server Separation**: Frontend and backend evolve independently
-- **Layered System**: Can add proxies, load balancers, etc.
-- **Platform Independent**: Any client can consume the API
-- **Easy to Understand**: Based on standard HTTP conventions
-
-### Clean Code Explained
-Clean code is code that is:
-
-1. **Readable**: Easy to understand at first glance
-   - Descriptive names for variables, functions, and classes
-   - Proper formatting and indentation
-   - Clear structure and organization
-
-2. **Maintainable**: Easy to modify and extend
-   - Small, focused functions and classes
-   - Low coupling between components
-   - High cohesion within components
-
-3. **Testable**: Easy to write tests for
-   - Pure functions where possible
-   - Dependency injection for flexibility
-   - Clear separation of concerns
-
-4. **Simple**: No unnecessary complexity
-   - YAGNI (You Aren't Gonna Need It)
-   - DRY (Don't Repeat Yourself)
-   - KISS (Keep It Simple, Stupid)
-
-**In this project:**
-- Clear naming: `UrlShortenerService`, `shortenUrl()`, `incrementClicks()`
-- Single responsibility: Each class does one thing well
-- Type safety: TypeScript and PHP type hints
-- Error handling: Custom exceptions with meaningful messages
-- Documentation: OpenAPI specs, comments where needed
-- Testing: Comprehensive test coverage
-
-## Author
-
-Built for Ommax interview by Oscar
+### Code Organization
+Followed SOLID principles where it made sense:
+- Separated concerns (Controller → Service → Repository)
+- Dependency injection for flexibility
+- Type hints everywhere for better IDE support and fewer bugs
+- Tests cover the critical paths
 
 ## License
 
-This is a demo project for interview purposes.
+MIT License - Feel free to use this project as reference.

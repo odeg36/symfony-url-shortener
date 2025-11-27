@@ -29,11 +29,6 @@ final class UrlShortenerService
     ) {
     }
 
-    /**
-     * Get paginated list of all shortened URLs.
-     *
-     * @return array{data: array<int, array<string, mixed>>, pagination: array{total: int, page: int, limit: int, totalPages: int}}
-     */
     public function getAllUrlsPaginated(int $page = 1, int $limit = 10): array
     {
         $page = max(1, $page);
@@ -65,8 +60,7 @@ final class UrlShortenerService
         // Normalize the URL before processing
         $originalUrl = $this->normalizeUrl($originalUrl);
 
-        // Validate URL using Symfony Validator with strict requirements
-        // Note: requireTld is set to false to support all TLDs including newer ones like .ci, .io, etc.
+        // Validate URL format (requireTld=false allows newer TLDs like .io, .ai, etc.)
         $violations = $this->validator->validate($originalUrl, [
             new Assert\Url(
                 protocols: ['http', 'https'],
@@ -132,9 +126,7 @@ final class UrlShortenerService
     }
 
     /**
-     * Validates that the URL is reachable by making a HEAD request.
-     *
-     * @throws UnreachableUrlException if the URL cannot be reached
+     * Check if URL is actually reachable (HEAD request with 5s timeout).
      */
     private function validateUrlIsReachable(string $url): void
     {
@@ -164,12 +156,7 @@ final class UrlShortenerService
     }
 
     /**
-     * Normalize URL to ensure consistent representation.
-     *
-     * - Trims whitespace
-     * - Removes trailing slash from root domain (e.g., https://example.com/)
-     * - Keeps trailing slashes on paths (e.g., https://example.com/path/)
-     * - Converts hostname to lowercase
+     * Normalize URL (trim, lowercase host, handle trailing slashes).
      */
     private function normalizeUrl(string $url): string
     {
@@ -259,27 +246,14 @@ final class UrlShortenerService
     }
 
     /**
-     * Generates a deterministic short code for the URL.
-     *
-     * Uses MD5 hash (first 8 characters) for deterministic code generation.
-     * Same URL always produces the same short code.
-     *
-     * Collision probability: With 8 hex chars, we have 16^8 = 4.3 billion possible codes.
-     * For production with millions of URLs, consider:
-     * - Longer codes (10-12 chars)
-     * - Database unique constraint handles collisions
-     * - Could add incremental suffix on collision
+     * Generate deterministic short code using MD5 hash.
+     * Same URL always gets the same code (useful for deduplication).
      */
     private function generateShortCode(string $url): string
     {
         return substr(md5($url), 0, 8);
     }
 
-    /**
-     * Format a ShortUrl entity to an array representation.
-     *
-     * @return array{originalUrl: string, shortCode: string, shortUrl: string, clicks: int, createdAt: string}
-     */
     public function formatShortUrl(ShortUrl $shortUrl): array
     {
         return [

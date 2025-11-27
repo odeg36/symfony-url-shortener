@@ -1,4 +1,4 @@
-import { Coffee, Link2 } from 'lucide-react';
+import { Sparkles, Coffee, Link2 } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { UrlProvider } from './contexts/UrlContext';
@@ -69,7 +69,8 @@ function AppContent() {
           <p className="flex items-center justify-center gap-1.5">
             Crafted with a lot of coffee 
             <Coffee className="w-4 h-4 inline" aria-hidden="true" />. 
-            Powered by React, TypeScript & Symfony magic ✨
+            Built with React, TypeScript & Symfony magic 
+            <Sparkles className="w-4 h-4 inline" aria-hidden="true" />. 
           </p>
         </footer>
       </div>
