@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-final class ShortUrlNotFoundException extends \RuntimeException
+use RuntimeException;
+
+final class ShortUrlNotFoundException extends RuntimeException
 {
     public function __construct(string $shortCode)
     {

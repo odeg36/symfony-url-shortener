@@ -380,4 +380,71 @@ final class UrlShortenerServiceTest extends TestCase
 
         $this->assertInstanceOf(ShortUrl::class, $shortUrl);
     }
+
+    public function testUrlNormalizationRemovesTrailingSlash(): void
+    {
+        $urlWithSlash = 'https://facebook.com/';
+        $urlWithoutSlash = 'https://facebook.com';
+
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->method('validate')->willReturn(new ConstraintViolationList());
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+
+        $repository = $this->createMock(ShortUrlRepository::class);
+        $repository->method('findByOriginalUrl')->willReturn(null);
+
+        $service = $this->createUrlShortenerService($repository, $validator, $entityManager);
+
+        $shortUrl1 = $service->shortenUrl($urlWithSlash);
+        $shortUrl2 = $service->shortenUrl($urlWithoutSlash);
+
+        // Both should generate the same short code because they're normalized to the same URL
+        $this->assertSame($shortUrl1->getShortCode(), $shortUrl2->getShortCode());
+    }
+
+    public function testUrlNormalizationKeepsHttpAndHttpsSeparate(): void
+    {
+        $httpUrl = 'http://facebook.com';
+        $httpsUrl = 'https://facebook.com';
+
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->method('validate')->willReturn(new ConstraintViolationList());
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+
+        $repository = $this->createMock(ShortUrlRepository::class);
+        $repository->method('findByOriginalUrl')->willReturn(null);
+
+        $service = $this->createUrlShortenerService($repository, $validator, $entityManager);
+
+        $shortUrl1 = $service->shortenUrl($httpUrl);
+        $shortUrl2 = $service->shortenUrl($httpsUrl);
+
+        // These should generate DIFFERENT short codes because they use different protocols
+        $this->assertNotSame($shortUrl1->getShortCode(), $shortUrl2->getShortCode());
+    }
+
+    public function testUrlNormalizationHandlesQueryStringsAndFragments(): void
+    {
+        $url1 = 'https://example.com/page?foo=bar&baz=qux';
+        $url2 = 'https://example.com/page?baz=qux&foo=bar'; // Different order
+
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->method('validate')->willReturn(new ConstraintViolationList());
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+
+        $repository = $this->createMock(ShortUrlRepository::class);
+        $repository->method('findByOriginalUrl')->willReturn(null);
+
+        $service = $this->createUrlShortenerService($repository, $validator, $entityManager);
+
+        $shortUrl1 = $service->shortenUrl($url1);
+        $shortUrl2 = $service->shortenUrl($url2);
+
+        // Query string order matters, so these should be different
+        // This documents the current behavior - normalize can be enhanced later if needed
+        $this->assertNotSame($shortUrl1->getShortCode(), $shortUrl2->getShortCode());
+    }
 }

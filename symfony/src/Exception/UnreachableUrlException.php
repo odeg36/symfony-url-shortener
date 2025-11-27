@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-final class UnreachableUrlException extends \RuntimeException
+use RuntimeException;
+
+final class UnreachableUrlException extends RuntimeException
 {
     public function __construct(string $url)
     {

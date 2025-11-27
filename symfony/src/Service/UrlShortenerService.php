@@ -12,6 +12,7 @@ use App\Exception\UnreachableUrlException;
 use App\Repository\ShortUrlRepository;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -59,6 +60,9 @@ final class UrlShortenerService
         if (null === $originalUrl || '' === trim($originalUrl)) {
             throw new InvalidUrlException('Please provide a URL to shorten');
         }
+
+        // Normalize the URL before processing
+        $originalUrl = $this->normalizeUrl($originalUrl);
 
         // Validate URL using Symfony Validator with strict requirements
         // Note: requireTld is set to false to support all TLDs including newer ones like .ci, .io, etc.
@@ -142,7 +146,7 @@ final class UrlShortenerService
             if ($statusCode >= 400) {
                 throw new UnreachableUrlException($url);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // If it's already our exception, re-throw it
             if ($e instanceof UnreachableUrlException) {
                 throw $e;
@@ -153,13 +157,107 @@ final class UrlShortenerService
     }
 
     /**
+     * Normalize URL to ensure consistent representation.
+     *
+     * - Trims whitespace
+     * - Removes trailing slash from root domain (e.g., https://example.com/)
+     * - Keeps trailing slashes on paths (e.g., https://example.com/path/)
+     * - Converts hostname to lowercase
+     */
+    private function normalizeUrl(string $url): string
+    {
+        $url = trim($url);
+
+        $parsedUrl = parse_url($url);
+        if (!$parsedUrl) {
+            return $url;
+        }
+
+        return $this->buildNormalizedUrl($parsedUrl);
+    }
+
+    /**
+     * @param array<string, mixed> $parsedUrl
+     */
+    private function buildNormalizedUrl(array $parsedUrl): string
+    {
+        $normalized = $this->buildBaseUrl($parsedUrl);
+        $normalized .= $this->buildPath($parsedUrl);
+        $normalized .= $this->buildQueryAndFragment($parsedUrl);
+
+        return $normalized;
+    }
+
+    /**
+     * @param array<string, mixed> $parsedUrl
+     */
+    private function buildBaseUrl(array $parsedUrl): string
+    {
+        $base = '';
+
+        if (isset($parsedUrl['scheme']) && is_string($parsedUrl['scheme'])) {
+            $base .= strtolower($parsedUrl['scheme']).'://';
+        }
+
+        if (isset($parsedUrl['host']) && is_string($parsedUrl['host'])) {
+            $base .= strtolower($parsedUrl['host']);
+        }
+
+        if (isset($parsedUrl['port']) && is_int($parsedUrl['port'])) {
+            $scheme = isset($parsedUrl['scheme']) && is_string($parsedUrl['scheme']) ? $parsedUrl['scheme'] : '';
+            $base .= $this->buildPort($scheme, $parsedUrl['port']);
+        }
+
+        return $base;
+    }
+
+    private function buildPort(string $scheme, int $port): string
+    {
+        $isDefaultPort = ('http' === $scheme && 80 === $port)
+            || ('https' === $scheme && 443 === $port);
+
+        return $isDefaultPort ? '' : ':'.$port;
+    }
+
+    /**
+     * @param array<string, mixed> $parsedUrl
+     */
+    private function buildPath(array $parsedUrl): string
+    {
+        $path = isset($parsedUrl['path']) && is_string($parsedUrl['path']) ? $parsedUrl['path'] : '/';
+
+        if ('/' === $path || '' === $path) {
+            return '';
+        }
+
+        return $path;
+    }
+
+    /**
+     * @param array<string, mixed> $parsedUrl
+     */
+    private function buildQueryAndFragment(array $parsedUrl): string
+    {
+        $result = '';
+
+        if (isset($parsedUrl['query']) && is_string($parsedUrl['query'])) {
+            $result .= '?'.$parsedUrl['query'];
+        }
+
+        if (isset($parsedUrl['fragment']) && is_string($parsedUrl['fragment'])) {
+            $result .= '#'.$parsedUrl['fragment'];
+        }
+
+        return $result;
+    }
+
+    /**
      * Generates a deterministic short code for the URL.
      *
      * Uses MD5 hash (first 8 characters) for deterministic code generation.
      * Same URL always produces the same short code.
      *
      * Collision probability: With 8 hex chars, we have 16^8 = 4.3 billion possible codes.
-     * Birthday paradox: ~50% collision chance at ~77,000 unique URLs.
      * For production with millions of URLs, consider:
      * - Longer codes (10-12 chars)
      * - Database unique constraint handles collisions

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-final class InvalidUrlException extends \RuntimeException
+use RuntimeException;
+
+final class InvalidUrlException extends RuntimeException
 {
     public function __construct(string $url)
     {

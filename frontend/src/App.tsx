@@ -1,4 +1,4 @@
-import { Link2 } from 'lucide-react';
+import { Coffee, Link2 } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { UrlProvider } from './contexts/UrlContext';
@@ -66,7 +66,11 @@ function AppContent() {
         </main>
 
         <footer className="text-center mt-12 text-gray-600 text-sm">
-          <p>Built with React, TypeScript, Tailwind CSS, and Symfony</p>
+          <p className="flex items-center justify-center gap-1.5">
+            Crafted with a lot of coffee 
+            <Coffee className="w-4 h-4 inline" aria-hidden="true" />. 
+            Powered by React, TypeScript & Symfony magic ✨
+          </p>
         </footer>
       </div>
 
