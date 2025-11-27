@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, CheckCircle } from 'lucide-react';
 import { api } from '../api';
 import type { PaginatedResponse, ShortUrl } from '../types';
 import { AppError, NotificationType } from '../types';
@@ -263,12 +263,11 @@ const UrlRow = memo(function UrlRow({
             {url.clicks}
           </span>
           {url.clicks > 0 && (
-            <span 
-              title="This URL has been accessed" 
-              aria-label="URL has been accessed"
-              className="text-green-500"
-            >
-              ✓
+            <span title="This URL has been accessed">
+              <CheckCircle 
+                className="w-4 h-4 text-green-500"
+                aria-label="URL has been accessed"
+              />
             </span>
           )}
         </div>

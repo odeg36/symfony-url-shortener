@@ -17,7 +17,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 if ! docker compose version &> /dev/null; then
-    echo "❌ Error: 'docker compose' command not found."
+    echo "Error: 'docker compose' command not found."
     echo "Please make sure Docker Compose is installed and running."
     exit 1
 fi

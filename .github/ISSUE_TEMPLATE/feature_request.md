@@ -6,31 +6,31 @@ labels: enhancement
 assignees: ''
 ---
 
-## 🚀 Feature Description
+## Feature Description
 <!-- A clear and concise description of what you want to happen -->
 
-## 🎯 Problem Statement
+## Problem Statement
 <!-- Describe the problem you're trying to solve -->
 
-## 💡 Proposed Solution
+## Proposed Solution
 <!-- Describe the solution you'd like -->
 
-## 🔄 Alternatives Considered
+## Alternatives Considered
 <!-- Describe any alternative solutions or features you've considered -->
 
-## 📋 Acceptance Criteria
+## Acceptance Criteria
 <!-- List the requirements that must be met for this feature to be complete -->
 - [ ] Criterion 1
 - [ ] Criterion 2
 - [ ] Criterion 3
 
-## 📸 Mockups/Examples
+## Mockups/Examples
 <!-- If applicable, add mockups or examples to help explain your feature -->
 
-## 📝 Additional Context
+## Additional Context
 <!-- Add any other context or screenshots about the feature request here -->
 
-## 🎖️ Priority
+## Priority
 <!-- Mark the priority level -->
 - [ ] 🔴 High
 - [ ] 🟡 Medium
