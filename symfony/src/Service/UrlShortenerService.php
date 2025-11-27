@@ -11,6 +11,7 @@ use App\Exception\ShortUrlPersistenceException;
 use App\Exception\UnreachableUrlException;
 use App\Repository\ShortUrlRepository;
 use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -85,18 +86,24 @@ final class UrlShortenerService
         }
         $this->validateUrlIsReachable($originalUrl);
 
-        $existing = $this->repository->findByOriginalUrl($originalUrl);
-        if (null !== $existing) {
-            return $existing;
-        }
-
+        // Generate deterministic short code
         $shortCode = $this->generateShortCode($originalUrl);
         $shortUrl = new ShortUrl($originalUrl, $shortCode);
 
         try {
+            // Optimistic insert: try to create directly
             $this->entityManager->persist($shortUrl);
             $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            // Duplicate detected - fetch and return existing record
+            $existing = $this->repository->findByOriginalUrl($originalUrl);
+            if (null !== $existing) {
+                return $existing;
+            }
+            // Should not happen, but safety check
+            throw new ShortUrlPersistenceException();
         } catch (DBALException $e) {
+            // Other database errors
             throw new ShortUrlPersistenceException();
         }
 

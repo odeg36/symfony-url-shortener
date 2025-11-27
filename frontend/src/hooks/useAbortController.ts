@@ -1,7 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 
 interface UseAbortControllerReturn {
-  signal: AbortSignal | undefined;
   abort: () => void;
   reset: () => void;
 }
@@ -35,10 +34,9 @@ export function useAbortController(): UseAbortControllerReturn {
     return () => {
       abort();
     };
-  }, []);
+  }, [abort, reset]);
 
   return {
-    signal: controllerRef.current?.signal,
     abort,
     reset,
   };

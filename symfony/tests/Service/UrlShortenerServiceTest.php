@@ -62,18 +62,31 @@ final class UrlShortenerServiceTest extends TestCase
     public function testShortenUrlReturnsExistingForSameUrl(): void
     {
         $url = 'https://example.com';
-        $existingShortUrl = new ShortUrl($url, 'abc123');
+        $shortCode = substr(md5($url), 0, 8);
+        $existingShortUrl = new ShortUrl($url, $shortCode);
 
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->method('validate')->willReturn(new ConstraintViolationList());
 
         $repository = $this->createMock(ShortUrlRepository::class);
-        $repository->method('findByOriginalUrl')->with($url)->willReturn($existingShortUrl);
 
-        $service = $this->createUrlShortenerService($repository, $validator);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        // Simulate unique constraint violation on flush by throwing the exception
+        $entityManager->expects($this->once())
+            ->method('flush')
+            ->willThrowException($this->createMock(\Doctrine\DBAL\Exception\UniqueConstraintViolationException::class));
+
+        // After catching exception, repository should return existing
+        $repository->expects($this->once())
+            ->method('findByOriginalUrl')
+            ->with($url)
+            ->willReturn($existingShortUrl);
+
+        $service = $this->createUrlShortenerService($repository, $validator, $entityManager);
         $shortUrl = $service->shortenUrl($url);
 
-        $this->assertSame($existingShortUrl, $shortUrl);
+        $this->assertEquals($existingShortUrl->getShortCode(), $shortUrl->getShortCode());
+        $this->assertEquals($existingShortUrl->getOriginalUrl(), $shortUrl->getOriginalUrl());
     }
 
     public function testShortenUrlThrowsExceptionForNullUrl(): void

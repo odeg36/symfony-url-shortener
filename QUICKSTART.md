@@ -6,6 +6,9 @@
 # Run the setup script
 ./setup.sh
 
+# Or with Make:
+make setup
+
 # Or manually:
 cd symfony && composer install
 php bin/console doctrine:database:create
@@ -87,21 +90,8 @@ php bin/console doctrine:migrations:migrate
 
 ### View Database
 ```bash
-# If using PostgreSQL
 docker exec -it <postgres_container> psql -U postgres -d symfony
 ```
-
-## Troubleshooting
-
-### Backend Issues
-- **Port 8000 in use:** Change port in command
-- **Database error:** Check `.env` and run migrations
-- **CORS error:** Verify `nelmio_cors.yaml` config
-
-### Frontend Issues
-- **API not found:** Check `VITE_API_URL` in `.env`
-- **Build errors:** Delete `node_modules` and run `npm install`
-- **Port 5176 in use:** Vite will suggest another port
 
 ## Development
 
@@ -151,18 +141,6 @@ symfony-interview/
 └── setup.sh              # Setup script
 ```
 
-## Checklist Before Presentation
-
-- [ ] Backend running on port 8000
-- [ ] Frontend running on port 5176
-- [ ] Database migrated and working
-- [ ] Can create short URL via frontend
-- [ ] Short URL list displays correctly
-- [ ] Click counting works
-- [ ] Swagger docs accessible
-- [ ] Tests passing
-- [ ] Presentation notes reviewed
-
 ## Key Demo Points
 
 1. Show frontend UI - clean, responsive design
@@ -174,15 +152,7 @@ symfony-interview/
 7. Explain clean code examples
 8. Answer technical questions
 
-## Interview Questions Prep
-
-Review `PRESENTATION.md` for detailed answers to:
-- What is a microservice?
-- Advantages of REST API?
-- Clean Code principles?
-
 ## Resources
-
 - **Symfony Docs:** https://symfony.com/doc/current/
 - **React Docs:** https://react.dev
 - **Tailwind CSS:** https://tailwindcss.com/docs

@@ -45,6 +45,7 @@ export function UrlProvider({ children }: UrlProviderProps) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useUrl(): UrlContextValue {
   const context = useContext(UrlContext);
   if (!context) {

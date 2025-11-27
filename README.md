@@ -1,6 +1,6 @@
 # URL Shortener - Ommax Interview Project
 
-A microservice-based URL shortener application built with Symfony (backend) and React (frontend). This project demonstrates REST API development, clean code practices, and modern web development architecture.
+A microservice-based URL shortener application built with Symfony (backend) and React and Vite (frontend). This project demonstrates REST API development, clean code practices, and modern web development architecture.
 
 ## Features
 

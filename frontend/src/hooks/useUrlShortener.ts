@@ -33,7 +33,7 @@ export function useUrlShortener(): UseUrlShortenerReturn {
   const { addNotification } = useNotification();
   const { setLastShortenedUrl, triggerRefresh } = useUrl();
   const { executeWithRetry } = useRetry();
-  const { signal, reset: resetAbort } = useAbortController();
+  const { reset: resetAbort } = useAbortController();
   
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -105,7 +105,6 @@ export function useUrlShortener(): UseUrlShortenerReturn {
   }, [
     url,
     loading,
-    signal,
     executeWithRetry,
     resetAbort,
     setLastShortenedUrl,

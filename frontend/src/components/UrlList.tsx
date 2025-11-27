@@ -207,17 +207,17 @@ const UrlRow = memo(function UrlRow({
   onCopy: (url: ShortUrl) => void;
 }) {
   const formattedDate = useMemo(() => {
-    return new Date(url.createdAt).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    const date = new Date(url.createdAt);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
   }, [url.createdAt]);
 
   return (
     <tr className="hover:bg-gray-50">
       <td className="px-4 py-4 whitespace-nowrap">
-        <span className="font-mono text-sm font-medium text-blue-600">
+        <span className="font-mono text-sm font-medium text-gray-900">
           {url.shortCode}
         </span>
       </td>
